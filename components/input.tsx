@@ -1,7 +1,6 @@
 "use client";
 
 import * as React from "react";
-import { memo } from "react";
 
 interface InputProps {
   input: string;
@@ -19,7 +18,7 @@ const SendIcon = (props: React.SVGProps<SVGSVGElement>) => (
   </svg>
 );
 
-export const Input = memo(function Input({
+export function Input({
   input,
   handleInputChange,
   isInitializing,
@@ -67,27 +66,27 @@ export const Input = memo(function Input({
 
       <div className="mt-0.5 p-1 pt-0">
         <div className="flex items-center justify-end gap-2">
-            {status === "streaming" || status === "submitted" ? (
-              <button
-                type="button"
-                onClick={stop}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 transition-colors"
-              >
-                <div className="h-3 w-3 bg-white dark:bg-black rounded"></div>
-                <span className="sr-only">Stop</span>
-              </button>
-            ) : (
-              <button
-                type="submit"
-                disabled={!hasValue || isInitializing}
-                className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-              >
-                <SendIcon className="h-5 w-5" />
-                <span className="sr-only">Send message</span>
-              </button>
-            )}
+          {status === "streaming" || status === "submitted" ? (
+            <button
+              type="button"
+              onClick={stop}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 transition-colors"
+            >
+              <div className="h-3 w-3 bg-white dark:bg-black rounded"></div>
+              <span className="sr-only">Stop</span>
+            </button>
+          ) : (
+            <button
+              type="submit"
+              disabled={!hasValue || isInitializing}
+              className="flex h-8 w-8 items-center justify-center rounded-full bg-black text-white hover:bg-black/80 dark:bg-white dark:text-black dark:hover:bg-white/80 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            >
+              <SendIcon className="h-5 w-5" />
+              <span className="sr-only">Send message</span>
+            </button>
+          )}
         </div>
       </div>
     </div>
   );
-});
+}

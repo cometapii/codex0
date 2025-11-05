@@ -4,13 +4,17 @@ import { RealtimeMessage } from "@/components/realtime-message";
 import { getDesktopURL } from "@/lib/e2b/utils";
 import { useScrollToBottom } from "@/lib/use-scroll-to-bottom";
 import { useRawStreaming } from "@/lib/use-raw-streaming";
-import { useEffect, useState, useCallback, useMemo } from "react";
+import {
+  useEffect,
+  useState,
+  type ChangeEvent,
+  type FormEvent,
+} from "react";
 import { Input } from "@/components/input";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { AISDKLogo } from "@/components/icons";
 import { PromptSuggestions } from "@/components/prompt-suggestions";
-import { ABORTED } from "@/lib/utils";
 
 export default function Chat() {
   const [desktopContainerRef, desktopEndRef] = useScrollToBottom();
@@ -46,21 +50,23 @@ export default function Chat() {
 
   const [isSubmitted, setIsSubmitted] = useState(false);
 
-  const stop = useCallback(() => {
+  const stop = () => {
     setIsSubmitted(false);
     originalStop();
-  }, [originalStop]);
+  };
 
-  const handleInputChange = useCallback((e: React.ChangeEvent<HTMLInputElement> | React.ChangeEvent<HTMLTextAreaElement>) => {
+  const handleInputChange = (e: ChangeEvent<HTMLTextAreaElement>) => {
     setInput(e.target.value);
-  }, [setInput]);
+  };
 
-  const handleFormSubmit = useCallback((e: React.FormEvent) => {
+  const handleFormSubmit = (e: FormEvent) => {
     e.preventDefault();
-    if (!input.trim() || isStreaming || isInitializing) return;
+    if (!input.trim() || isStreaming || isInitializing) {
+      return;
+    }
     setIsSubmitted(true);
     handleSubmit(e);
-  }, [input, isStreaming, isInitializing, handleSubmit]);
+  };
 
   // Reset submitted state when streaming starts or ends
   useEffect(() => {
@@ -69,10 +75,10 @@ export default function Chat() {
     }
   }, [isStreaming]);
 
-  const isLoading = useMemo(() => isStreaming || isSubmitted, [isStreaming, isSubmitted]);
-  const status = useMemo(() => isStreaming ? "streaming" : isSubmitted ? "submitted" : "ready", [isStreaming, isSubmitted]);
+  const isLoading = isStreaming || isSubmitted;
+  const status = isStreaming ? "streaming" : isSubmitted ? "submitted" : "ready";
 
-  const refreshDesktop = useCallback(async () => {
+  const refreshDesktop = async () => {
     try {
       setIsInitializing(true);
       const { streamUrl, id } = await getDesktopURL(sandboxId || undefined);
@@ -83,12 +89,12 @@ export default function Chat() {
     } finally {
       setIsInitializing(false);
     }
-  }, [sandboxId]);
+  };
 
-  const handlePromptSubmit = useCallback((prompt: string) => {
+  const handlePromptSubmit = (prompt: string) => {
     setIsSubmitted(true);
     send(prompt);
-  }, [send]);
+  };
 
   // Kill desktop on page close
   useEffect(() => {
@@ -146,7 +152,7 @@ export default function Chat() {
     const init = async () => {
       try {
         setIsInitializing(true);
-        const { streamUrl, id } = await getDesktopURL(sandboxId ?? undefined);
+        const { streamUrl, id } = await getDesktopURL();
         setStreamUrl(streamUrl);
         setSandboxId(id);
       } catch (err) {
